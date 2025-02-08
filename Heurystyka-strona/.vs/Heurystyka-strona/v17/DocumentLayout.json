@@ -1,0 +1,118 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "H:\\C# - Swarms\\Heurystyka-strona\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|H:\\C# - Swarms\\Heurystyka-strona\\heurystyka-strona\\components\\pages\\singlealgorithm.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|solutionrelative:heurystyka-strona\\components\\pages\\singlealgorithm.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|h:\\c# - swarms\\heurystyka-strona\\heurystyka-strona\\components\\pages\\editbestparameters.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|solutionrelative:heurystyka-strona\\components\\pages\\editbestparameters.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|H:\\C# - Swarms\\Heurystyka-strona\\heurystyka-strona\\components\\pages\\addingdll.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|solutionrelative:heurystyka-strona\\components\\pages\\addingdll.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|H:\\C# - Swarms\\Heurystyka-strona\\heurystyka-strona\\components\\pages\\multiplealgorithm.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|solutionrelative:heurystyka-strona\\components\\pages\\multiplealgorithm.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|H:\\C# - Swarms\\Heurystyka-strona\\heurystyka-strona\\components\\pages\\getreports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|solutionrelative:heurystyka-strona\\components\\pages\\getreports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|H:\\C# - Swarms\\Heurystyka-strona\\heurystyka-strona\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B9C7118C-81BF-4FB9-931F-46E9BD0EA71C}|Heurystyka-strona\\Heurystyka-strona.csproj|solutionrelative:heurystyka-strona\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AddingDLL.razor",
+              "DocumentMoniker": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\AddingDLL.razor",
+              "RelativeDocumentMoniker": "Heurystyka-strona\\Components\\Pages\\AddingDLL.razor",
+              "ToolTip": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\AddingDLL.razor",
+              "RelativeToolTip": "Heurystyka-strona\\Components\\Pages\\AddingDLL.razor",
+              "ViewState": "AQIAACEAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-29T18:36:44.888Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EditBestParameters.razor",
+              "DocumentMoniker": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\EditBestParameters.razor",
+              "RelativeDocumentMoniker": "Heurystyka-strona\\Components\\Pages\\EditBestParameters.razor",
+              "ToolTip": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\EditBestParameters.razor",
+              "RelativeToolTip": "Heurystyka-strona\\Components\\Pages\\EditBestParameters.razor",
+              "ViewState": "AQIAABMAAAAAAAAAAAAEwCoAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-29T13:17:31.759Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GetReports.razor",
+              "DocumentMoniker": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\GetReports.razor",
+              "RelativeDocumentMoniker": "Heurystyka-strona\\Components\\Pages\\GetReports.razor",
+              "ToolTip": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\GetReports.razor",
+              "RelativeToolTip": "Heurystyka-strona\\Components\\Pages\\GetReports.razor",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAXAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-27T17:27:15.905Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MultipleAlgorithm.razor",
+              "DocumentMoniker": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\MultipleAlgorithm.razor",
+              "RelativeDocumentMoniker": "Heurystyka-strona\\Components\\Pages\\MultipleAlgorithm.razor",
+              "ToolTip": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\MultipleAlgorithm.razor",
+              "RelativeToolTip": "Heurystyka-strona\\Components\\Pages\\MultipleAlgorithm.razor",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAABOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-01-27T16:19:01.354Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Program.cs",
+              "RelativeDocumentMoniker": "Heurystyka-strona\\Program.cs",
+              "ToolTip": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Program.cs",
+              "RelativeToolTip": "Heurystyka-strona\\Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAA0AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-03T18:29:00.08Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SingleAlgorithm.razor",
+              "DocumentMoniker": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\SingleAlgorithm.razor",
+              "RelativeDocumentMoniker": "Heurystyka-strona\\Components\\Pages\\SingleAlgorithm.razor",
+              "ToolTip": "H:\\C# - Swarms\\Heurystyka-strona\\Heurystyka-strona\\Components\\Pages\\SingleAlgorithm.razor",
+              "RelativeToolTip": "Heurystyka-strona\\Components\\Pages\\SingleAlgorithm.razor",
+              "ViewState": "AQIAAGgBAAAAAAAAAAAAAEoBAABGAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-12-30T18:07:07.885Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

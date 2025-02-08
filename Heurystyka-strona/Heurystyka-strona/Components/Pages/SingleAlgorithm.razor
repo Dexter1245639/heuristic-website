@@ -1,0 +1,729 @@
+﻿@page "/singlealgorithm"
+@rendermode InteractiveServer
+@inject HttpClient HttpClient
+@using System.Timers
+@using System.Text.Json
+@implements IDisposable
+
+<PageTitle>Single Algorithm</PageTitle>
+
+<div class="algorithm-header">
+    <div>
+        <h2>Choose algorithm:</h2>
+    </div>
+</div>
+
+<div class="algorithm-choose">
+    <div>
+        <select @onchange="OnAlgorithmChanged" class="custom-select" name="select_algorithm" id="select_algorithm">
+            @if (Algorithms == null || !Algorithms.Any())
+            {
+                <option disabled>Loading...</option>
+            }
+            else
+            {
+                <option value="" selected disabled hidden>Choose here</option>
+                @foreach (var algorithm in Algorithms)
+                {
+                    <option value="@algorithm">@algorithm</option>
+                }
+            }
+        </select>
+    </div>
+</div>
+
+<div class="data-header">
+    <div>
+        <h2>Input parameters:</h2>
+    </div>
+</div>
+
+<div class="data-input-domains">
+    @if (NumberOfParameters > 0)
+    {
+        @for (int o = 0; o < NumberOfParameters; o++)
+		{
+            int localIndex_2 = o;
+            <div class="dimension-block">
+                <h3>@algorithmParametersNames[o] - @parametersDescription[o]</h3>
+            </div>
+            @for (int j = 0; j < NumberOfParameters; j++)
+            {
+                int localIndex = j;
+                <div class="dimension-block">
+                    <label>@parametersNames[j]</label>
+                    <input type="number" step="0.1" min="-100" max="100" class="custom-input"
+                           @oninput="(e) => SetParameterValue(localIndex_2, localIndex, e.Value.ToString())" />
+                </div>
+            }
+        }
+    }
+    else
+    {
+        <div class="data-input">
+            <p>No parameters to input.</p>
+        </div>
+    }
+</div>
+
+
+<div class="data-header">
+    <div>
+        <h2>Input data:</h2>
+    </div>
+</div>
+
+<div class="data-input">
+    <label>Iterations:</label>
+    <input @bind="Iterations" class="custom-input" type="number" id="iterations" min="5" max="10000" />
+</div>
+
+<div class="data-input">
+    <label>Population size:</label>
+    <input @bind="Size" class="custom-input" type="number" id="population" min="2" max="100" />
+</div>
+
+<div class="data-input">
+    <label>Dimensions:</label>
+    <input @bind="Dimensions" class="custom-input" type="number" id="dimensions" min="2" max="30" />
+</div>
+
+<div class="data-input">
+    <label>Repetitions:</label>
+    <input @bind="repetitionsNumber" class="custom-input" type="number" id="repetitions" min="1" max="10" />
+</div>
+
+<div class="data-header-load">
+    <h2>Load function from file?</h2>
+</div>
+<div class="data-input">
+    <select @bind="LoadFromFile" class="custom-select-load">
+        <option value="false">No</option>
+        <option value="true">Yes</option>
+    </select>
+</div>
+
+<div class="data-header">
+    <div>
+        <h2>Choose functions:</h2>
+    </div>
+</div>
+
+<div class="data-input">
+    @if (functions == null)
+    {
+        <p>Loading functions...</p>
+    }
+    else if (!functions.Any())
+    {
+        <p>No functions available.</p>
+    }
+    else
+    {
+        @foreach (var func in functions)
+        {
+            <div>
+                <input type="checkbox" id="@func" value="@func" @onchange="(e) => UpdateSelectedFunctions(e, func)" />
+                <label for="@func">@func</label>
+            </div>
+        }
+    }
+</div>
+
+<div class="data-header-domains">
+    <h2>Define domain ranges:</h2>
+</div>
+
+<div class="data-input-domains">
+    @if (selectedFunctions != null && selectedFunctions.Any())
+    {
+        @foreach (var func in selectedFunctions)
+        {
+            <div class="function-block">
+                <h4>@func</h4>
+                @for (int i = 0; i < Dimensions; i++)
+                {
+                    <div class="dimension-block">
+                        <label>Dimension @i:</label>
+                        <input type="number" min="-10" max="0"
+                               value="@GetLowerDimension(func, i)"
+                               @oninput="(e) => SetLowerDimension(func, i, e.Value.ToString())"
+                               class="custom-input" />
+                        <input type="number" min="0" max="10"
+                               value="@GetUpperDimension(func, i)"
+                               @oninput="(e) => SetUpperDimension(func, i, e.Value.ToString())"
+                               class="custom-input" />
+                    </div>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <p class="data-header-domains">Please select at least one function to define dimension ranges.</p>
+    }
+</div>
+
+<div class="data-header">
+    @if (selectedFunctions != null && selectedFunctions.Any())
+    {
+        <button class="btnSubmit" @onclick="SubmitData">Submit</button>
+    }
+</div>
+
+<div class="data-header">
+    <h3>Status: @statusMessage</h3>
+</div>
+
+
+<div class="results-section">
+    <h2>Results</h2>
+    @if (Reports != null && Reports.Any())
+    {
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Best Fitness</th>
+                    <th>X Best</th>
+                    <th>Algorithm Name</th>
+                    <th>Algorithm Function</th>
+                    <th>Parameters</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var report in Reports)
+                {
+                    <tr>
+                        <td>@report.FBest</td>
+                        <td>@report.XBest</td>
+                        <td>@report.AlgorithmName</td>
+                        <td>@report.AlgorithmFunction</td>
+                        <td>@report.Parameters</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No results to display. Submit data to see results.</p>
+    }
+</div>
+
+
+
+
+@code {
+    private List<string> Algorithms { get; set; } = [""];
+    private List<string> functions;
+    private string AlgorithmName = "ArtificialBeeColony";
+    private List<string> selectedFunctions = new();
+    private List<double[]> Parameters = new List<double[]>
+    {
+
+        new double[] { -2, 2, 2, -2 }
+    };
+    private Dictionary<string, List<(double Lower, double Upper)>> DimensionRanges = new();
+    private bool LoadFromFile = false;
+    private int Dimensions = 2;
+    private int Iterations = 20;
+    private int Size = 5;
+    private int repetitionsNumber = 1;
+    private string statusMessage = "Awaiting submission...";
+    private string ResponseBody = "";
+
+    private List<Report> Reports { get; set; } = new();
+
+    private int NumberOfParameters = 0;
+    private List<double> ParameterValues { get; set; } = new();
+    private List<double[]> ParametersExample = new List<double[]>
+    {
+
+        new double[] { -2, 2, 2, -2 }
+    };
+
+    private string[] parametersNames = new string[] { "Min:", "Max:", "Step:" };
+    private string[] algorithmParametersNames = new string[] {};
+    private string[] parametersDescription = new string[] { };
+    private Timer? statusTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Algorithms = await HttpClient.GetFromJsonAsync<List<string>>("/api/Options/algorithms");
+            functions = await HttpClient.GetFromJsonAsync<List<string>>("/api/Options/functions");
+            ParameterValues = Enumerable.Repeat(1.0, NumberOfParameters).ToList();
+            statusTimer = new Timer(5000);
+            statusTimer.Elapsed += async (sender, e) => await HandleTimer();
+            statusTimer.AutoReset = true;
+
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching data: {ex.Message}");
+        }
+    }
+
+    private async Task HandleTimer()
+    {
+        try
+        {
+            var response = await HttpClient.GetAsync("/api/SingleAlgorithm/status");
+            if (response.IsSuccessStatusCode)
+            {
+                statusMessage = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                statusMessage = "Failed to fetch status.";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error fetching status: {ex.Message}";
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (statusTimer != null)
+        {
+            statusTimer.Stop();
+            statusTimer.Elapsed -= async (sender, e) => await HandleTimer();
+            statusTimer.Dispose();
+        }
+    }
+
+    private async Task SubmitData()
+    {
+        statusTimer.Start();
+
+
+
+        var Domain = selectedFunctions.Select(func => DimensionRanges[func]
+            .Select(range => new[] { range.Lower, range.Upper }).ToArray()).ToList();
+
+        var payload = new AlgorithmParameters
+            {
+                algorithmName = AlgorithmName,
+                testFunctionNames = selectedFunctions.ToArray(),
+                parameterRanges = Parameters,
+                domain = Domain,
+                repetitions = Enumerable.Repeat((double)repetitionsNumber, selectedFunctions.Count).ToList(),
+                load = LoadFromFile,
+                size = Size,
+                dimensions = Dimensions,
+                iteration = Iterations
+            };
+
+        try
+        {
+            var response = await HttpClient.PostAsJsonAsync("/api/SingleAlgorithm", payload);
+            ResponseBody = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                statusTimer.Stop();
+                statusMessage = "Success!";
+                var responseJson = JsonSerializer.Deserialize<ResponseModel>(ResponseBody, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                if (responseJson != null && responseJson.Reports != null)
+                {
+                    Reports = responseJson.Reports;
+                    Console.WriteLine("Reports:");
+                    foreach (var report in Reports)
+                    {
+                        Console.WriteLine($"xBest: {string.Join(", ", report.XBest)}, fBest: {report.FBest}");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error: {ex.Message}";
+        }
+    }
+
+
+
+    private void UpdateSelectedFunctions(ChangeEventArgs e, string func)
+    {
+        if (((bool)e.Value))
+        {
+            if (!selectedFunctions.Contains(func))
+            {
+                selectedFunctions.Add(func);
+                EnsureDimensionRange(func);
+            }
+        }
+        else
+        {
+            selectedFunctions.Remove(func);
+            DimensionRanges.Remove(func);
+        }
+    }
+
+    private async Task OnAlgorithmChanged(ChangeEventArgs e)
+    {
+        AlgorithmName = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(AlgorithmName))
+        {
+            var api_link = $"/api/Parameters?name={AlgorithmName}";
+            var api_parameters_link = $"/nazwy?name={AlgorithmName}";
+            var api_parameters_desc = $"/opisy?name={AlgorithmName}";
+
+            try
+            {
+                algorithmParametersNames = await HttpClient.GetFromJsonAsync<string[]>(api_parameters_link);
+                NumberOfParameters = await HttpClient.GetFromJsonAsync<int>(api_link);
+                parametersDescription = await HttpClient.GetFromJsonAsync<string[]>(api_parameters_desc);
+
+                while (ParameterValues.Count < NumberOfParameters)
+                {
+                    ParameterValues.Add(0.0);
+                }
+                while (ParameterValues.Count > NumberOfParameters)
+                {
+                    ParameterValues.RemoveAt(ParameterValues.Count - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error fetching number of parameters: {ex.Message}");
+            }
+        }
+    }
+
+
+
+
+    private void EnsureDimensionRangeWithIndex(string func, int dimensionIndex)
+    {
+        EnsureDimensionRange(func);
+
+        while (dimensionIndex >= DimensionRanges[func].Count)
+        {
+            DimensionRanges[func].Add((-10.0, 10.0));
+        }
+    }
+
+
+
+    private void EnsureDimensionRange(string func)
+    {
+        if (!DimensionRanges.ContainsKey(func))
+        {
+            DimensionRanges[func] = new List<(double Lower, double Upper)>();
+        }
+
+        var currentRanges = DimensionRanges[func];
+
+        while (currentRanges.Count < Dimensions)
+        {
+            currentRanges.Add((-10.0, 10.0));
+        }
+        while (currentRanges.Count > Dimensions)
+        {
+            currentRanges.RemoveAt(currentRanges.Count - 1);
+        }
+    }
+
+
+
+    private void UpdateDimensions(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int newDimensions))
+        {
+            Dimensions = newDimensions;
+
+            foreach (var func in selectedFunctions)
+            {
+                EnsureDimensionRange(func);
+            }
+        }
+    }
+
+
+
+    private double GetLowerDimension(string func, int dimensionIndex)
+    {
+        EnsureDimensionRange(func);
+        return DimensionRanges[func][dimensionIndex].Lower;
+    }
+
+    private void SetLowerDimension(string func, int dimensionIndex, string value)
+    {
+        EnsureDimensionRangeWithIndex(func, dimensionIndex);
+
+        if (double.TryParse(value, out var parsedValue))
+        {
+            DimensionRanges[func][dimensionIndex] = (parsedValue, DimensionRanges[func][dimensionIndex].Upper);
+        }
+    }
+
+
+    private double GetUpperDimension(string func, int dimensionIndex)
+    {
+        EnsureDimensionRange(func);
+        return DimensionRanges[func][dimensionIndex].Upper;
+    }
+
+    private void SetUpperDimension(string func, int dimensionIndex, string value)
+    {
+        EnsureDimensionRangeWithIndex(func, dimensionIndex);
+
+        if (double.TryParse(value, out var parsedValue))
+        {
+            DimensionRanges[func][dimensionIndex] = (DimensionRanges[func][dimensionIndex].Lower, parsedValue);
+        }
+    }
+
+
+
+    private void SetParameterValue(int outerIndex, int innerIndex, string value)
+    {
+        // Ensure the outer list has the required capacity
+        while (Parameters.Count <= outerIndex)
+        {
+            Parameters.Add(new double[parametersNames.Length]);
+        }
+
+        if (double.TryParse(value, out var parsedValue))
+        {
+            Parameters[outerIndex][innerIndex] = parsedValue;
+            Console.WriteLine(Parameters[outerIndex][innerIndex]);
+        }
+    }
+
+
+
+
+    public class AlgorithmParameters
+    {
+        public string algorithmName { get; set; }
+        public string[] testFunctionNames { get; set; }
+        public List<double[]> parameterRanges { get; set; }
+        public List<double[][]> domain { get; set; }
+        public List<double> repetitions { get; set; }
+        public bool load { get; set; }
+        public int size { get; set; }
+        public int dimensions { get; set; }
+        public int iteration { get; set; }
+    }
+
+    public class Report
+    {
+        public string XBest { get; set; }
+        public double FBest { get; set; }
+        public string AlgorithmName { get; set; }
+        public string AlgorithmFunction { get; set; }
+        public string Parameters { get; set; }
+    }
+
+
+    public class ResponseModel
+    {
+        public string Id { get; set; }
+        public List<Report> Reports { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+}
+
+<style>
+
+
+    .algorithm-header {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 20px;
+    }
+
+    .algorithm-choose {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .custom-select {
+        font-size: 16px;
+        width: 200px;
+        padding: 5px;
+        height: 50px;
+        border-radius: 5px;
+        border: 5px solid #ccc;
+    }
+
+    .custom-select-load {
+        font-size: 16px;
+        width: 100px;
+        padding: 5px;
+        height: 50px;
+        border-radius: 5px;
+        border: 5px solid #ccc;
+    }
+
+
+    .data-header {
+        padding: 20px;
+        position: relative;
+        width: 100%;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .data-header-load {
+        padding: 20px;
+        position: relative;
+        width: 100%;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .data-input {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .data-input-load {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+    .custom-input {
+        font-size: 16px;
+        padding: 10px;
+        width: 100px;
+        text-align: center;
+        height: 45px;
+        border-radius: 5px;
+        border: 5px solid #ccc;
+    }
+
+
+    .generated-inputs {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+        .generated-inputs input {
+            width: 50%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 5px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+    .data-header-domains {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .data-input-domains {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .function-block {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .dimension-block {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .custom-input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 80px;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .results-section {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .results-table {
+        width: 80%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid red;
+    }
+
+        .results-table th, .results-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .results-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .results-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+    .btnSubmit {
+        padding: 20px;
+        position: relative;
+        width: 100px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>

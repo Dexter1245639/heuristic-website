@@ -1,0 +1,617 @@
+﻿@page "/multiplealgorithm"
+@rendermode InteractiveServer
+@inject HttpClient HttpClient
+@using System.Timers
+@using System.Text.Json
+
+<PageTitle>Single Algorithm</PageTitle>
+
+<div class="algorithm-header">
+    <div>
+        <h2>Choose function:</h2>
+    </div>
+</div>
+
+<div class="algorithm-choose">
+    <div>
+        <select @bind="selectedFunction" class="custom-select" name="select_algorithm" id="select_algorithm">
+            @if (functions == null || !functions.Any())
+            {
+                <option disabled>Loading...</option>
+            }
+            else
+            {
+                <option value="" selected disabled hidden>Choose here</option>
+                @foreach (var func in functions)
+                {
+                    <option value="@func">@func</option>
+                }
+            }
+        </select>
+    </div>
+</div>
+
+
+<div class="data-header">
+    <div>
+        <h2>Choose Algorithms:</h2>
+    </div>
+</div>
+
+<div class="data-input">
+    @if (Algorithms == null)
+    {
+        <p>Loading algorithms...</p>
+    }
+    else if (!Algorithms.Any())
+    {
+        <p>No algorithms available.</p>
+    }
+    else
+    {
+        @foreach (var alg in Algorithms)
+        {
+            <div>
+                <input type="checkbox" id="@alg" value="@alg" @onchange="(e) => UpdateSelectedAlgorithms(e, alg)" />
+                <label for="@alg">@alg</label>
+            </div>
+        }
+    }
+</div>
+
+
+<div class="data-header">
+    <div>
+        <h2>Input data:</h2>
+    </div>
+</div>
+
+<div class="data-input">
+    <label>Iterations:</label>
+    <input @bind="Iterations" class="custom-input" type="number" id="iterations" min="5" max="100" />
+</div>
+
+<div class="data-input">
+    <label>Population size:</label>
+    <input @bind="Size" class="custom-input" type="number" id="population" min="2" max="100" />
+</div>
+
+<div class="data-input">
+    <label>Dimensions:</label>
+    <input @bind="Dimensions" class="custom-input" type="number" id="dimensions" min="2" max="30" />
+</div>
+
+<div class="data-input">
+    <label>Repetitions:</label>
+    <input @bind="repetitionsNumber" class="custom-input" type="number" id="repetitions" min="1" max="10" />
+</div>
+
+<div class="data-header-load">
+    <h2>Load function from file?</h2>
+</div>
+<div class="data-input">
+    <select @bind="LoadFromFile" class="custom-select-load">
+        <option value="false">No</option>
+        <option value="true">Yes</option>
+    </select>
+</div>
+
+
+<div class="data-header-domains">
+    <h2>Define domain ranges:</h2>
+</div>
+
+<div class="data-input-domains">
+    @if (selectedFunction != null && selectedFunction.Any())
+    {
+
+            <div class="function-block">
+                <h4>@selectedFunction</h4>
+                @for (int i = 0; i < Dimensions; i++)
+                {
+                    <div class="dimension-block">
+                        <label>Dimension @i:</label>
+                        <input type="number" min="-10" max="0"
+                           value="@GetLowerDimension(i)"
+                           @oninput="(e) => SetLowerDimension(i, e.Value.ToString())"
+                               class="custom-input" />
+                        <input type="number" min="0" max="10"
+                           value="@GetUpperDimension(i)"
+                           @oninput="(e) => SetUpperDimension(i, e.Value.ToString())"
+                               class="custom-input" />
+                    </div>
+                }
+            </div>
+        
+    }
+    else
+    {
+        <p class="data-header-domains">Please select at least one function to define dimension ranges.</p>
+    }
+</div>
+
+<div class="data-header">
+    @if(selectedAlgorithms != null && selectedAlgorithms.Any())
+    {
+        <button class="btnSubmit" @onclick="SubmitData">Submit</button>
+    }
+</div>
+
+<div class="data-header">
+    <h3>Status: @statusMessage</h3>
+</div>
+
+<div class="results-section">
+    <h2>Results</h2>
+    @if (Reports != null && Reports.Any())
+    {
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Best Fitness</th>
+                    <th>X Best</th>
+                    <th>Algorithm Name</th>
+                    <th>Algorithm Function</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var report in Reports)
+                {
+                    <tr>
+                        <td>@report.FBest</td>
+                        <td>@report.XBest</td>
+                        <td>@report.AlgorithmName</td>
+                        <td>@report.AlgorithmFunction</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No results to display. Submit data to see results.</p>
+    }
+</div>
+
+
+
+
+@code {
+    private List<string> Algorithms { get; set; } = [""];
+    private List<string> functions;
+    private string selectedFunction;
+    private List<string> selectedAlgorithms { get; set; } = new();
+
+    public List<double[]> Domain { get; set; } = new();
+
+    private bool LoadFromFile = false;
+    private int Dimensions = 2;
+    private int Iterations = 20;
+    private int Size = 5;
+    private int repetitionsNumber = 1;
+    private string statusMessage = "Awaiting submission...";
+    private string ResponseBody = "";
+
+    private List<Report> Reports { get; set; } = new();
+
+    private Timer? statusTimer;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Algorithms = await HttpClient.GetFromJsonAsync<List<string>>("/api/Options/algorithms");
+            functions = await HttpClient.GetFromJsonAsync<List<string>>("/api/Options/functions");
+            statusTimer = new Timer(5000);
+            statusTimer.Elapsed += async (sender, e) => await HandleTimer();
+            statusTimer.AutoReset = true;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching data: {ex.Message}");
+        }
+    }
+
+    private async Task HandleTimer()
+    {
+        try
+        {
+            var response = await HttpClient.GetAsync("/api/MultipleAlgorithms/status");
+            if (response.IsSuccessStatusCode)
+            {
+                statusMessage = await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                statusMessage = "Failed to fetch status.";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error fetching status: {ex.Message}";
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        if (statusTimer != null)
+        {
+            statusTimer.Stop();
+            statusTimer.Elapsed -= async (sender, e) => await HandleTimer();
+            statusTimer.Dispose();
+        }
+    }
+
+    private async Task SubmitData()
+    {
+        statusTimer.Start();
+        foreach (var alg in selectedAlgorithms)
+		{
+			Console.WriteLine($"Selected algorithm: {alg}");
+		}
+        var payload = new AlgorithmParameters
+            {
+                algorithmNames = selectedAlgorithms,
+                testFunctionName = selectedFunction,
+                domain = Domain,
+                repetitions = Enumerable.Repeat((double)repetitionsNumber, selectedAlgorithms.Count).ToList(),
+                load = LoadFromFile,
+                size = Size,
+                dimensions = Dimensions,
+                iteration = Iterations
+            };
+
+        try
+        {
+            var response = await HttpClient.PostAsJsonAsync("/api/MultipleAlgorithms", payload);
+            ResponseBody = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                statusTimer.Stop();
+                statusMessage = "Success!";
+                var responseJson = JsonSerializer.Deserialize<ResponseModel>(ResponseBody, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                if (responseJson != null && responseJson.Reports != null)
+                {
+                    Reports = responseJson.Reports;
+                    Console.WriteLine("Reports:");
+                    foreach (var report in Reports)
+                    {
+                        Console.WriteLine($"xBest: {string.Join(", ", report.XBest)}, fBest: {report.FBest}");
+                    }
+                    statusMessage = "Submission successful!";
+                }
+                else
+                {
+                    statusMessage = "Response JSON is invalid or missing reports.";
+                }
+            }
+            else
+            {
+                statusMessage = "Submission failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error: {ex.Message}";
+        }
+    }
+
+    private void UpdateSelectedAlgorithms(ChangeEventArgs e, string alg)
+    {
+        if (((bool)e.Value))
+        {
+            if (!selectedAlgorithms.Contains(alg))
+            {
+                selectedAlgorithms.Add(alg);
+            }
+        }
+        else
+        {
+            selectedAlgorithms.Remove(alg);
+        }
+    }
+
+
+
+    private void EnsureDimensionRangeWithIndex(int dimensionIndex)
+    {
+        EnsureDimensionRange();
+
+        while (dimensionIndex >= Domain.Count)
+        {
+            Domain.Add(new double[] { -10.0, 10.0 });
+        }
+    }
+
+
+    private void EnsureDimensionRange()
+    {
+        if (Domain == null)
+        {
+            Domain = new List<double[]>();
+        }
+
+        while (Domain.Count < Dimensions)
+        {
+            Domain.Add(new double[] { -10.0, 10.0 });
+        }
+        while (Domain.Count > Dimensions)
+        {
+            Domain.RemoveAt(Domain.Count - 1);
+        }
+    }
+
+
+    private void UpdateDimensions(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int newDimensions))
+        {
+            Dimensions = newDimensions;
+        }
+    }
+
+    private double GetLowerDimension(int dimensionIndex)
+    {
+        EnsureDimensionRange();
+        return Domain[dimensionIndex][0];
+    }
+
+    private double GetUpperDimension(int dimensionIndex)
+    {
+        EnsureDimensionRange();
+        return Domain[dimensionIndex][1];
+    }
+
+    private void SetLowerDimension(int dimensionIndex, string value)
+    {
+        EnsureDimensionRangeWithIndex(dimensionIndex);
+
+        if (double.TryParse(value, out var parsedValue))
+        {
+            Domain[dimensionIndex][0] = parsedValue;
+        }
+    }
+
+    private void SetUpperDimension(int dimensionIndex, string value)
+    {
+        EnsureDimensionRangeWithIndex(dimensionIndex);
+
+        if (double.TryParse(value, out var parsedValue))
+        {
+            Domain[dimensionIndex][1] = parsedValue;
+        }
+    }
+
+
+
+
+
+    public class AlgorithmParameters
+    {
+        public string testFunctionName { get; set; }
+        public List<string> algorithmNames { get; set; }
+        public bool load { get; set; }
+        public List<double> repetitions { get; set; }
+        public List<double[]> domain { get; set; }
+        public int size { get; set; }
+        public int dimensions { get; set; }
+        public int iteration { get; set; }
+    }
+
+    public class Report
+    {
+        public string XBest { get; set; }
+        public double FBest { get; set; }
+        public string AlgorithmName { get; set; }
+        public string AlgorithmFunction { get; set; }
+        public string Parameters { get; set; }
+    }
+
+
+    public class ResponseModel
+    {
+        public string Id { get; set; }
+        public List<Report> Reports { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+
+}
+
+<style>
+
+
+    .algorithm-header {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-bottom: 20px;
+    }
+
+    .algorithm-choose {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .custom-select {
+        font-size: 16px;
+        width: 200px;
+        padding: 5px;
+        height: 50px;
+        border-radius: 5px;
+        border: 5px solid #ccc;
+    }
+
+    .custom-select-load {
+        font-size: 16px;
+        width: 100px;
+        padding: 5px;
+        height: 50px;
+        border-radius: 5px;
+        border: 5px solid #ccc;
+    }
+
+
+    .data-header {
+        padding: 20px;
+        position: relative;
+        width: 100%;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .data-header-load {
+        padding: 20px;
+        position: relative;
+        width: 100%;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .data-input {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .data-input-load {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+    .custom-input {
+        font-size: 16px;
+        padding: 10px;
+        width: 100px;
+        text-align: center;
+        height: 45px;
+        border-radius: 5px;
+        border: 5px solid #ccc;
+    }
+
+
+    .generated-inputs {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+        .generated-inputs input {
+            width: 50%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 5px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+    .data-header-domains {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .data-input-domains {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .function-block {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .dimension-block {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .custom-input {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 80px;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .results-section {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .results-table {
+        width: 80%;
+        margin: 0 auto;
+        border-collapse: collapse;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid red;
+    }
+
+        .results-table th, .results-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .results-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .results-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .results-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+    .btnSubmit {
+        padding: 20px;
+        position: relative;
+        width: 100px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>

@@ -1,0 +1,67 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = Heurystyka-strona
+build_property.RootNamespace = Heurystyka-strona
+build_property.ProjectDir = H:\C# - Swarms\Heurystyka-strona\Heurystyka-strona\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = H:\C# - Swarms\Heurystyka-strona\Heurystyka-strona
+build_property._RazorSourceGeneratorDebug = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Pages/AddingDLL.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZGRpbmdETEwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Pages/EditBestParameters.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFZGl0QmVzdFBhcmFtZXRlcnMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Pages/GetReports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xHZXRSZXBvcnRzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Pages/MultipleAlgorithm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNdWx0aXBsZUFsZ29yaXRobS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Pages/SingleAlgorithm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaW5nbGVBbGdvcml0aG0ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-t9ttdmw4sq
+
+[H:/C\# - Swarms/Heurystyka-strona/Heurystyka-strona/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-dczsg6x7dd
